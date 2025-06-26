@@ -1,0 +1,277 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diretório de Ferramentas de IA</title>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+        h2 {
+            font-size: 1.8em;
+            margin-top: 30px;
+            color: #ff6200;
+        }
+        .category {
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .ai-button {
+            background-color: #1a1a1a;
+            border: 1px solid #ff6200;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        .ai-button:hover {
+            background-color: #ff6200;
+            color: #000000;
+            transform: scale(1.05);
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 10px 0;
+            border-top: 1px solid #ff6200;
+            font-size: 0.9em;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+    <h1>Diretório de Ferramentas de IA</h1>
+    
+    <div class="category">
+        <h2>Modelos de Linguagem e Chatbots Gerais</h2>
+        <div class="button-container" id="language-models"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Busca e Pesquisa com IA</h2>
+        <div class="button-container" id="search-research"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Geradores de Imagens a Partir de Texto</h2>
+        <div class="button-container" id="text-to-image"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Edição e Melhoria de Imagens</h2>
+        <div class="button-container" id="image-editing"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Geração e Edição de Vídeos</h2>
+        <div class="button-container" id="video-tools"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Plataformas de Design e Criação</h2>
+        <div class="button-container" id="design-platforms"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Escrita e Criação de Conteúdo</h2>
+        <div class="button-container" id="writing-tools"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Ferramentas de Áudio e Fala</h2>
+        <div class="button-container" id="audio-tools"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Codificação e Desenvolvimento</h2>
+        <div class="button-container" id="coding-tools"></div>
+    </div>
+    
+    <div class="category">
+        <h2>Utilitários de IA Especializados</h2>
+        <div class="button-container" id="specialized-utilities"></div>
+    </div>
+
+    <footer>Feito por Ítalo Alberto de Sêne Miguel - OAB/PR 127.730</footer>
+
+    <script>
+        const aiTools = {
+            "language-models": [
+                { name: "ChatGPT", url: "https://chatgpt.com/" },
+                { name: "Claude", url: "https://claude.ai/new" },
+                { name: "DeepSeek", url: "https://chat.deepseek.com/" },
+                { name: "Gemini", url: "https://gemini.google.com/app?hl=pt-BR" },
+                { name: "Grok", url: "https://grok.com/" },
+                { name: "Hugging Face Chat", url: "https://huggingface.co/chat/" },
+                { name: "Mistral", url: "https://mistral.ai/" },
+                { name: "Poe", url: "https://poe.com/login" },
+                { name: "Qwen", url: "https://chat.qwen.ai/" },
+                { name: "Maritaca", url: "https://www.maritaca.ai/" }
+            ],
+            "search-research": [
+                { name: "Perplexity", url: "https://www.perplexity.ai/" },
+                { name: "Consensus", url: "https://consensus.app/" },
+                { name: "GenSpark", url: "https://www.genspark.ai/" },
+                { name: "ChatPDF", url: "https://www.chatpdf.com/" },
+                { name: "Paperz", url: "https://paperz.ai/sign-in" }
+            ],
+            "text-to-image": [
+                { name: "MidJourney", url: "https://www.midjourney.com/home" },
+                { name: "Stable Diffusion", url: "https://stablediffusionweb.com/" },
+                { name: "Stable Image", url: "https://stability.ai/stable-image" },
+                { name: "Leonardo", url: "https://leonardo.ai/" },
+                { name: "DALL·E (Bing)", url: "https://www.bing.com/images/create" },
+                { name: "Fotor", url: "https://www.fotor.com/ai-image-generator/" },
+                { name: "Craiyon", url: "https://www.craiyon.com/" },
+                { name: "NightCafe", url: "https://creator.nightcafe.studio/" },
+                { name: "Dream", url: "https://dream.ai/" },
+                { name: "DeepAI", url: "https://deepai.org/machine-learning-model/text2img" },
+                { name: "ArtGuru", url: "https://www.artguru.ai/" },
+                { name: "StarryAI", url: "https://starryai.com/" },
+                { name: "DreamStudio", url: "https://beta.dreamstudio.ai/generate" },
+                { name: "SoulGen", url: "https://www.soulgen.ai/" },
+                { name: "Imagen", url: "https://deepmind.google/models/imagen/" },
+                { name: "Ideogram", url: "https://ideogram.ai/t/explore" },
+                { name: "Artbreeder", url: "https://www.artbreeder.com/" },
+                { name: "DeepDream", url: "https://deepdreamgenerator.com/" }
+            ],
+            "image-editing": [
+                { name: "Watermark Remover", url: "https://www.watermarkremover.io/upload" },
+                { name: "LetsEnhance", url: "https://letsenhance.io/pt" },
+                { name: "Pixlr", url: "https://pixlr.com/" },
+                { name: "Picsart", url: "https://picsart.com/ai-image-generator/" }
+            ],
+            "video-tools": [
+                { name: "Synthesia", url: "https://www.synthesia.io/" },
+                { name: "InVideo", url: "https://invideo.io/" },
+                { name: "Pictory", url: "https://pictory.ai/" },
+                { name: "Veed", url: "https://www.veed.io/" },
+                { name: "RunwayML", url: "https://runwayml.com/" },
+                { name: "HeyGen", url: "https://app.heygen.com/home" },
+                { name: "FlexClip", url: "https://www.flexclip.com/ai/" },
+                { name: "Descript", url: "https://www.descript.com/" },
+                { name: "DeepMotion", url: "https://www.deepmotion.com/" },
+                { name: "Genmo", url: "https://www.genmo.ai/" },
+                { name: "Kaiber", url: "https://www.kaiber.ai/superstudio" },
+                { name: "Pika", url: "https://pika.art/login" },
+                { name: "Lumen5", url: "https://lumen5.com/" },
+                { name: "Fliki", url: "https://fliki.ai/" },
+                { name: "Simplified", url: "https://simplified.com/ai-video-generator" },
+                { name: "Capcut", url: "https://www.capcut.com/my-edit?from_page=landing_page" },
+                { name: "HumanPal", url: "https://humanpal.io/" },
+                { name: "GliaCloud", url: "https://www.gliacloud.com/en/" },
+                { name: "Synthesys", url: "https://synthesys.io/" }
+            ],
+            "design-platforms": [
+                { name: "Adobe Firefly", url: "https://www.adobe.com/br/products/firefly.html" },
+                { name: "Canva AI", url: "https://www.canva.com/pt_br/gerador-imagem-ia/" },
+                { name: "Brandmark", url: "https://brandmark.io/" },
+                { name: "Brandcrowd", url: "https://www.brandcrowd.com/" },
+                { name: "RoomGPT", url: "https://www.roomgpt.io/" }
+            ],
+            "writing-tools": [
+                { name: "Copy.ai", url: "https://www.copy.ai/" },
+                { name: "InfinityCopy", url: "https://www.infinitycopy.ai/" },
+                { name: "QuillBot", url: "https://quillbot.com/" },
+                { name: "Hemingway", url: "https://hemingwayapp.com/" },
+                { name: "MyJotBot", url: "https://app.myjotbot.com/" }
+            ],
+            "audio-tools": [
+                { name: "ElevenLabs", url: "https://elevenlabs.io/" },
+                { name: "Voicely", url: "https://voicely.net/" },
+                { name: "SpeechText", url: "https://speechtext.ai/" },
+                { name: "Suno", url: "https://suno.com/home" }
+            ],
+            "coding-tools": [
+                { name: "BlackBox", url: "https://www.blackbox.ai/" },
+                { name: "CodeWP", url: "https://codewp.ai/" },
+                { name: "AutoGPT", url: "https://github.com/Significant-Gravitas/AutoGPT" },
+                { name: "Firebase Studio", url: "https://studio.firebase.google.com/?pli=1" },
+                { name: "Manus", url: "https://manus.im/app" }
+            ],
+            "specialized-utilities": [
+                { name: "Juridico AI", url: "https://app.juridico.ai/inicio" },
+                { name: "GeoSpy", url: "https://app.geospy.ai/" },
+                { name: "TheresAnAIForThat", url: "https://theresanaiforthat.com/" },
+                { name: "FormulaBot", url: "https://www.formulabot.com/" },
+                { name: "Sider", url: "https://sider.ai/" },
+                { name: "Axiom", url: "https://axiom.ai/" },
+                { name: "BypassGPT", url: "https://www.bypassgpt.ai/" },
+                { name: "Sitekick", url: "https://www.sitekick.ai/" },
+                { name: "AIUncensored", url: "https://www.aiuncensored.info/" },
+                { name: "LightField", url: "https://lightfield.app/" },
+                { name: "DorkGPT", url: "https://www.dorkgpt.com/" },
+                { name: "Quso", url: "https://quso.ai/" },
+                { name: "Petalica", url: "https://petalica.com/index_en.html" },
+                { name: "AutoDraw", url: "https://www.autodraw.com/" }
+            ]
+        };
+
+        Object.keys(aiTools).forEach(category => {
+            const container = document.getElementById(category);
+            aiTools[category].forEach(tool => {
+                const button = document.createElement("a");
+                button.href = tool.url;
+                button.textContent = tool.name;
+                button.className = "ai-button";
+                button.target = "_blank";
+                container.appendChild(button);
+            });
+        });
+    </script>
+</body>
+</html>
